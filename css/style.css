@@ -1,0 +1,532 @@
+:root {
+  --bg-color: #f4f5f7;
+  --card-bg: #ffffff;
+  --primary: #4a6fa5;
+  --accent: #ff6b6b;
+  --stop-btn: #e63946;
+  --text: #333333;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+input, select {
+  user-select: auto;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  background-color: var(--bg-color);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  overflow: hidden;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-top: calc(var(--safe-top) + 12px);
+  padding-bottom: calc(var(--safe-bottom) + 12px);
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.view-section {
+  display: none;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.view-section.active {
+  display: flex;
+}
+
+/* 📋 テンプレートエリアのスタイル */
+.template-section {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  background: var(--card-bg);
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+#templateSelect {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: #fafafa;
+}
+
+.template-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.btn-sub {
+  padding: 8px 14px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.btn-alert {
+  background: #ff4d4f;
+}
+
+/* 📝 ルーレットの目的入力欄のスタイル */
+.purpose-container {
+  margin-bottom: 14px;
+}
+
+#purposeInput {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 1rem;
+  background: #fff;
+  font-weight: bold;
+  color: var(--primary);
+}
+
+#setupView .controls-section {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  margin-bottom: 16px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+.items-scroll {
+  overflow-y: auto;
+  flex: 1;
+  padding-right: 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.item-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  align-items: center;
+  width: 100%;
+}
+
+.item-row input[type="text"] {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: #fafafa;
+}
+
+.item-row input[type="number"] {
+  width: 65px;
+  flex-shrink: 0;
+  padding: 10px 4px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  text-align: center;
+  background: #fafafa;
+}
+
+.btn-del {
+  background: #ff4d4f;
+  color: white;
+  border: none;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.btn-add {
+  background: #e6f7ff;
+  color: var(--primary);
+  border: 1px dashed var(--primary);
+  padding: 12px;
+  border-radius: 8px;
+  width: 100%;
+  margin-top: 8px;
+  font-size: 0.95rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* 2️⃣ ルーレット画面 */
+.wheel-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-height: 0;
+}
+
+/* 🎯 ルーレット上部に表示されるタイトル文言 */
+.wheel-title-display {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--primary);
+  margin-bottom: 14px;
+  text-align: center;
+  min-height: 1.5rem;
+}
+
+.roulette-container {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pointer {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-top: 22px solid var(--accent);
+  z-index: 10;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+}
+
+canvas {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+.result-display {
+  height: 2.8rem;
+  margin-top: 16px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--accent);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-bar {
+  display: flex;
+  gap: 12px;
+}
+
+button.action-btn {
+  flex: 1;
+  height: 54px;
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: transform 0.1s, opacity 0.2s;
+}
+
+button.action-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.next-btn {
+  background-color: #2a9d8f !important;
+}
+
+.secondary-btn {
+  background-color: #6c757d !important;
+  flex: 0.7 !important;
+}
+
+#spinBtn {
+  background-color: var(--primary);
+}
+
+#stopBtn {
+  background-color: var(--stop-btn);
+}
+
+button.action-btn:disabled {
+  background-color: #ccc;
+  box-shadow: none;
+  opacity: 0.5;
+}
+
+.secret-modal-bg {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 100;
+  justify-content: center;
+  align-items: center;
+}
+
+.secret-modal-content {
+  background: white;
+  width: 80%;
+  max-width: 300px;
+  padding: 20px;
+  border-radius: 16px;
+  text-align: center;
+}
+
+.secret-modal-content select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  margin: 15px 0;
+  font-size: 1rem;
+}
+
+.secret-modal-content button {
+  width: 100%;
+  padding: 10px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+/* ==========================================
+   🎰 パチスロ風 確定演出の基本スタイル
+   ========================================== */
+.pachislot-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #000000; /* プチュンと暗転 */
+  z-index: 999;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.pachislot-overlay.active {
+  display: flex;
+  animation: freezeIn 0.3s ease-out forwards;
+}
+
+.pachislot-content {
+  position: relative;
+  width: 100%;
+  padding: 20px;
+}
+
+.pachislot-flash {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: #fff;
+  opacity: 0;
+  animation: flashEffect 0.5s ease-out 2;
+  pointer-events: none;
+}
+
+.pachislot-title {
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: #ff3333;
+  text-shadow: 0 0 10px #fff, 0 0 20px #ffcc00, 0 0 30px #ff3333;
+  margin-bottom: 10px;
+  letter-spacing: 4px;
+  animation: pachiVibration 0.1s infinite alternate;
+}
+
+.pachislot-message {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 0 8px #ffcc00;
+  margin-bottom: 20px;
+}
+
+.pachislot-sub {
+  font-size: 1rem;
+  color: #aaa;
+}
+
+@keyframes freezeIn {
+  0% { transform: scale(1.2); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes flashEffect {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes pachiVibration {
+  0% { transform: translate(2px, 1px) rotate(0deg); }
+  100% { transform: translate(-1px, -2px) rotate(1deg); }
+}
+
+/* ==========================================
+   🎰 特殊ルーレット中専用のド派手な背景と赤丸ボタン
+   ========================================== */
+
+/* 画面全体の白背景を上書きしてギラギラさせるクラス */
+.app-container.rainbow-flash {
+  background: linear-gradient(135deg, #ffe066, #f72585, #7209b7, #4cc9f0);
+  background-size: 300% 300%;
+  animation: rainbowBgAnim 1s ease infinite alternate, screenVibration 0.1s infinite alternate;
+}
+
+/* 🌟【配置修正】特殊演出の時、戻るボタンを画面の最下部中央に配置する */
+.app-container.rainbow-flash button#backBtn {
+  position: absolute !important;
+  left: 50% !important;
+  bottom: 16px !important;  /* 画面の一番下に配置 */
+  transform: translateX(-50%) !important;
+  z-index: 998 !important;  
+  width: 140px !important;  
+  height: 48px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
+}
+
+/* 🎰 【配置修正】戻るボタンと重ならないよう、その少し「上」に縦並びで絶対配置 */
+button#pachiActionBtn.pachi-red-button {
+  /* 既存のすべてのボタン装飾を強制リセット */
+  all: unset;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  
+  /* 通常時は非表示 */
+  display: none; 
+  
+  /* 筐体ボタン風のリアルな3D赤グラデーション */
+  background: radial-gradient(circle at 50% 30%, #ff4d4d, #b30000) !important;
+  color: #fff !important;
+  border: 4px solid #ffffff !important;
+  
+  /* 完全にきれいな正円（丸）に強制ロックする設定 */
+  border-radius: 50% !important; 
+  width: 120px !important;       
+  height: 120px !important;
+  min-width: 120px !important;   /* 潰されるのを絶対に防ぐ */
+  min-height: 120px !important;  /* 潰されるのを絶対に防ぐ */
+  
+  /* 文字の配置と装飾 */
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 1.4rem !important;
+  font-weight: 900 !important;
+  font-family: -apple-system, sans-serif !important;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.6) !important;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.5), inset 0 -4px 10px rgba(0,0,0,0.4) !important;
+  
+  /* 🌟 戻るボタンの「すぐ上」になるように高さを調整して、画面中央に絶対配置 */
+  position: absolute !important;
+  left: 50% !important;
+  bottom: 74px !important;  /* 戻るボタン（16px+48px=64px）の上に10pxの隙間を空けて配置 */
+  z-index: 999 !important;  
+  cursor: pointer !important;
+  
+  /* アニメーション（明滅と拡大縮小、中央位置キープ用） */
+  animation: pachiButtonPulse 0.4s infinite alternate !important;
+}
+
+/* 💡 JavaScriptで表示要求がある時だけ強制的に flex 表示にする */
+button#pachiActionBtn.pachi-red-button[style*="display: block"],
+button#pachiActionBtn.pachi-red-button[style*="display: flex"] {
+  display: flex !important; 
+}
+
+/* ボタンを押したときのリアルな押し込みエフェクト */
+button#pachiActionBtn.pachi-red-button:active:not(:disabled) {
+  /* 押し込んだときも中央位置（-50%）を保ったまま小さくする */
+  transform: translateX(-50%) scale(0.92) !important;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.3), inset 0 2px 5px rgba(0,0,0,0.5) !important;
+}
+
+/* 止めろっ！ボタン（ストップモード）の時はクールな青〜紫グラデに変化 */
+button#pachiActionBtn.pachi-red-button.stop-mode {
+  background: radial-gradient(circle at 50% 30%, #4cc9f0, #4361ee) !important;
+  animation: pachiButtonPulseStop 0.3s infinite alternate !important;
+}
+
+/* 背景グラデーションが超高速で動くアニメーション */
+@keyframes rainbowBgAnim {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+/* 画面全体が激アツで微振動するエフェクト */
+@keyframes screenVibration {
+  0% { transform: translate(1px, 1px); }
+  100% { translate: (-1px, -1px); }
+}
+
+/* 丸ボタンの形と「画面中央（-50%）」を完全に維持したまま拡大縮小させるアニメーション */
+@keyframes pachiButtonPulse {
+  0% { transform: translateX(-50%) scale(1); filter: brightness(1.2); }
+  100% { transform: translateX(-50%) scale(1.06); filter: brightness(0.9); }
+}
+@keyframes pachiButtonPulseStop {
+  0% { transform: translateX(-50%) scale(1); filter: brightness(1.1); }
+  100% { transform: translateX(-50%) scale(1.04); filter: brightness(0.95); }
+}

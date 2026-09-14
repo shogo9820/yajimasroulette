@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#4a6fa5">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>やじまズルーレット</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <header>
+      <!-- タイトル3回タップで隠し設定を表示 -->
+      <h1 id="appTitle">やじまズルーレット</h1>
+    </header>
+
+    <!-- 1️⃣ 設定画面 -->
+    <div id="setupView" class="view-section active">
+      <!-- 📋 テンプレート管理エリア -->
+      <div class="template-section">
+        <select id="templateSelect">
+          <option value="">-- 保存されたテンプレート --</option>
+        </select>
+        <div class="template-actions">
+          <button id="saveTemplateBtn" class="btn-sub">保存</button>
+          <button id="deleteTemplateBtn" class="btn-sub btn-alert">削除</button>
+        </div>
+      </div>
+
+      <div class="controls-section">
+        <!-- 📝 目的（何を決めるか）の入力欄 -->
+        <div class="purpose-container">
+          <input type="text" id="purposeInput" placeholder="例：ドラえもんの刑、はまち等">
+        </div>
+
+        <div class="section-header">
+          <span>項目設定</span>
+          <span style="font-size: 0.75rem; color: #888;">名称 / 幅</span>
+        </div>
+        <div id="itemsContainer" class="items-scroll"></div>
+        <button id="addBtn" class="btn-add">＋ 項目を追加</button>
+      </div>
+      
+      <div class="action-bar">
+        <button id="generateBtn" class="action-btn next-btn">ルーレットを作成する</button>
+      </div>
+    </div>
+
+    <!-- 2️⃣ ルーレット画面 -->
+    <div id="wheelView" class="view-section">
+      <div class="wheel-section">
+        <!-- 🎯 ルーレットタイトルの表示エリア -->
+        <div id="wheelTitleDisplay" class="wheel-title-display"></div>
+
+        <div class="roulette-container">
+          <div class="pointer"></div>
+          <canvas id="wheel"></canvas>
+        </div>
+        <div id="result" class="result-display"></div>
+      </div>
+
+      <!-- 🎰 ボタンエリア（特殊演出時はJS側で表示・非表示を切り替え） -->
+      <div class="action-bar" style="position: relative;">
+        <button id="backBtn" class="action-btn secondary-btn">戻る</button>
+        <button id="spinBtn" class="action-btn">スタート</button>
+        <button id="stopBtn" class="action-btn" disabled>ストップ！</button>
+        
+        <!-- 🎰 特殊演出時専用：巨大赤丸アクションボタン（初期状態は非表示） -->
+        <button id="pachiActionBtn" class="pachi-red-button" style="display: none;">押せっ！</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 隠し設定用モーダル（タイトル3回タップで出現） -->
+  <div id="secretModal" class="secret-modal-bg">
+    <div class="secret-modal-content">
+      <h3 style="margin: 0; font-size: 1.1rem; color: #333;">ターゲット・仕込み設定</h3>
+      
+      <!-- 🎰 独立設定①：特殊演出ルーレットに切り替わる確率設定 -->
+      <div style="margin-top: 14px; text-align: left;">
+        <label style="font-size: 0.85rem; font-weight: bold; color: #f72585;">🎰 特殊演出 発生確率</label>
+        <div style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
+          <input type="number" id="secretProbability" min="0" max="100" value="0" style="width: 70px; padding: 6px; border-radius: 6px; border: 1px solid #ffadd2; text-align: center; font-size: 1rem; font-weight: bold;">
+          <span style="font-weight: bold; color: #f72585; font-size: 0.9rem;">％</span>
+        </div>
+        <p style="font-size: 0.65rem; color: #666; margin: 4px 0 0 0;">※当選時はスタート直後にプチュン暗転し、コード固定の別格ルーレットに切り替わります。</p>
+      </div>
+
+      <!-- 🎯 独立設定②：元々の機能である通常項目のターゲット指定 -->
+      <div style="margin-top: 14px; text-align: left; border-top: 1px dashed #eee; padding-top: 12px;">
+        <label style="font-size: 0.85rem; font-weight: bold; color: #555;">🎯 通常盤面時の確定ターゲット</label>
+        <select id="secretSelect" style="width: 100%; padding: 8px; border-radius: 6px; margin-top: 4px; font-size: 0.95rem; border: 1px solid #ddd; background: #fff;">
+          <option value="random">【通常】仕込みなし</option>
+        </select>
+      </div>
+
+      <button id="closeSecretBtn" style="margin-top: 18px; width: 100%; padding: 10px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer;">決定</button>
+    </div>
+  </div>
+
+  <!-- 🎰 パチスロ風の確定演出用オーバーレイ画面 -->
+  <div id="pachislotEffect" class="pachislot-overlay">
+    <div class="pachislot-content">
+      <div class="pachislot-flash"></div>
+      <div class="pachislot-title">激熱</div>
+      <div class="pachislot-message">激熱演出発生！？</div>
+      <div class="pachislot-sub">やじまの運命を決めろ！！！</div>
+    </div>
+  </div>
+
+  <script src="./js/audio.js"></script>
+  <script src="./js/script.js"></script>
+</body>
+</html>
