@@ -1,4 +1,4 @@
-const CACHE_NAME = 'roulette-app-v4';
+const CACHE_NAME = 'roulette-app-v5';
 // sw.js の中のキャッシュファイルリスト（例）
 const CACHE_FILES = [
   './',
@@ -13,7 +13,7 @@ const CACHE_FILES = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
+      return cache.addAll(CACHE_FILES);
     })
   );
   self.skipWaiting();

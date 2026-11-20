@@ -40,8 +40,8 @@ const BONUS_ROULETTE_ITEMS = [
 ];
 
 const COLORS = [
-  '#4ea8de', '#f72585', '#7209b7', '#4361ee',
-  '#4cc9f0', '#f8961e', '#f9c74f', '#90be6d', '#e63946'
+  '#728ee8', '#f0829c', '#f2a162', '#ebc149',
+  '#5ec2a6', '#5fb8dc', '#a987e3', '#ea7878', '#83c474'
 ];
 
 // データ管理変数
@@ -151,10 +151,12 @@ function renderInputs() {
   itemsData.forEach((item, index) => {
     const row = document.createElement('div');
     row.className = 'item-row';
+    const dotColor = COLORS[index % COLORS.length];
     row.innerHTML = `
+      <span class="item-color-dot" style="background-color: ${dotColor};"></span>
       <input type="text" value="${item.name}" placeholder="項目名" data-index="${index}" class="input-name">
       <input type="number" value="${item.weight}" min="0.1" step="0.1" placeholder="幅" data-index="${index}" class="input-weight">
-      <button class="btn-del" data-index="${index}">✕</button>
+      <button class="btn-del" data-index="${index}" aria-label="削除">✕</button>
     `;
     itemsContainer.appendChild(row);
   });
@@ -202,8 +204,8 @@ function drawWheel() {
     ctx.arc(cx, cy, radius, startAngle, endAngle);
     ctx.fillStyle = COLORS[i % COLORS.length];
     ctx.fill();
-    ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.92)';
+    ctx.lineWidth = 2.5;
     ctx.stroke();
 
     if (arcSize > 0.08) {
@@ -212,16 +214,31 @@ function drawWheel() {
       ctx.rotate(startAngle + arcSize / 2);
       ctx.textAlign = 'right';
       ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 14px -apple-system, sans-serif';
-      ctx.shadowColor = 'rgba(0,0,0,0.4)';
-      ctx.shadowBlur = 3;
+      ctx.font = '700 14px "Zen Maru Gothic", "Hiragino Maru Gothic ProN", sans-serif';
+      ctx.shadowColor = 'rgba(45, 40, 65, 0.25)';
+      ctx.shadowBlur = 4;
       let text = item.name;
       if (text.length > 8) text = text.substring(0, 7) + '…';
-      ctx.fillText(text, radius - 12, 5);
+      ctx.fillText(text, radius - 16, 5);
       ctx.restore();
     }
     startAngle = endAngle;
   });
+
+  const hubRadius = Math.max(18, radius * 0.13);
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx, cy, hubRadius, 0, 2 * Math.PI);
+  ctx.fillStyle = '#ffffff';
+  ctx.shadowColor = 'rgba(60, 55, 85, 0.18)';
+  ctx.shadowBlur = 8;
+  ctx.fill();
+  ctx.restore();
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, hubRadius * 0.36, 0, 2 * Math.PI);
+  ctx.fillStyle = '#e5e2f2';
+  ctx.fill();
 }
 
 function getAngleRangeForItem(targetIndex) {
