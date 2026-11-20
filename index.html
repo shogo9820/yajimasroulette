@@ -101,10 +101,22 @@
 
       <!-- 🎯 独立設定②：元々の機能である通常項目のターゲット指定 -->
       <div class="secret-field secret-field--divider">
-        <label class="secret-label">🎯 通常盤面時の確定ターゲット</label>
-        <select id="secretSelect" class="secret-select">
+        <label class="secret-label" id="secretSelectLabel">🎯 通常盤面時の確定ターゲット</label>
+        <select id="secretSelect" class="secret-select-native" aria-hidden="true" tabindex="-1">
           <option value="random">【通常】仕込みなし</option>
         </select>
+        <div id="secretDropdown" class="custom-select">
+          <button type="button" id="secretDropdownTrigger" class="custom-select-trigger" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="secretSelectLabel secretDropdownValue">
+            <span class="custom-select-trigger-main">
+              <span id="secretDropdownDot" class="custom-select-dot custom-select-dot--neutral"></span>
+              <span id="secretDropdownValue" class="custom-select-value">【通常】仕込みなし</span>
+            </span>
+            <svg class="custom-select-chevron" width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M5.5 7.75L10 12.25L14.5 7.75" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div id="secretDropdownMenu" class="custom-select-menu" role="listbox" aria-labelledby="secretSelectLabel"></div>
+        </div>
       </div>
 
       <button id="closeSecretBtn" class="secret-submit-btn">決定</button>

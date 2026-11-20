@@ -1,4 +1,4 @@
-const CACHE_NAME = 'roulette-app-v5';
+const CACHE_NAME = 'roulette-app-v6';
 // sw.js の中のキャッシュファイルリスト（例）
 const CACHE_FILES = [
   './',

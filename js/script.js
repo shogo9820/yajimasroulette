@@ -8,6 +8,11 @@ const resultDiv = document.getElementById('result');
 const appTitle = document.getElementById('appTitle');
 const secretModal = document.getElementById('secretModal');
 const secretSelect = document.getElementById('secretSelect');
+const secretDropdown = document.getElementById('secretDropdown');
+const secretDropdownTrigger = document.getElementById('secretDropdownTrigger');
+const secretDropdownDot = document.getElementById('secretDropdownDot');
+const secretDropdownValue = document.getElementById('secretDropdownValue');
+const secretDropdownMenu = document.getElementById('secretDropdownMenu');
 const closeSecretBtn = document.getElementById('closeSecretBtn');
 
 // 画面切り替えおよび新設機能要素
@@ -163,6 +168,118 @@ function renderInputs() {
   updateSecretSelectOptions();
 }
 
+function closeSecretDropdown() {
+  if (!secretDropdown || !secretDropdownTrigger) return;
+  secretDropdown.classList.remove('is-open');
+  secretDropdownTrigger.setAttribute('aria-expanded', 'false');
+}
+
+function createCheckIcon() {
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(svgNS, 'svg');
+  svg.setAttribute('class', 'custom-select-check');
+  svg.setAttribute('width', '16');
+  svg.setAttribute('height', '16');
+  svg.setAttribute('viewBox', '0 0 20 20');
+  svg.setAttribute('fill', 'none');
+  svg.setAttribute('aria-hidden', 'true');
+
+  const path = document.createElementNS(svgNS, 'path');
+  path.setAttribute('d', 'M5 10.5L8.5 14L15 7');
+  path.setAttribute('stroke', 'currentColor');
+  path.setAttribute('stroke-width', '2.2');
+  path.setAttribute('stroke-linecap', 'round');
+  path.setAttribute('stroke-linejoin', 'round');
+  svg.appendChild(path);
+  return svg;
+}
+
+function syncSecretDropdownDisplay() {
+  if (!secretDropdownValue || !secretDropdownDot || !secretDropdownMenu) return;
+  const val = secretSelect.value || 'random';
+
+  if (val === 'random') {
+    secretDropdownValue.textContent = '【通常】仕込みなし';
+    secretDropdownDot.className = 'custom-select-dot custom-select-dot--neutral';
+    secretDropdownDot.style.backgroundColor = '';
+  } else {
+    const idx = parseInt(val, 10);
+    const item = itemsData[idx];
+    secretDropdownValue.textContent = item ? `[${idx + 1}] ${item.name || '（未入力）'}` : '【通常】仕込みなし';
+    secretDropdownDot.className = 'custom-select-dot';
+    secretDropdownDot.style.backgroundColor = COLORS[idx % COLORS.length];
+  }
+
+  secretDropdownMenu.querySelectorAll('.custom-select-option').forEach((optBtn) => {
+    const isSelected = optBtn.dataset.value === val;
+    optBtn.classList.toggle('is-selected', isSelected);
+    optBtn.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+  });
+}
+
+function buildSecretOptionButton(optValue, labelText, dotColor, badgeText) {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'custom-select-option';
+  btn.setAttribute('role', 'option');
+  btn.dataset.value = optValue;
+
+  const mainSpan = document.createElement('span');
+  mainSpan.className = 'custom-select-option-main';
+
+  const dotSpan = document.createElement('span');
+  if (dotColor) {
+    dotSpan.className = 'custom-select-dot';
+    dotSpan.style.backgroundColor = dotColor;
+  } else {
+    dotSpan.className = 'custom-select-dot custom-select-dot--neutral';
+  }
+  mainSpan.appendChild(dotSpan);
+
+  if (badgeText !== null) {
+    const badgeSpan = document.createElement('span');
+    badgeSpan.className = 'custom-select-option-badge';
+    badgeSpan.textContent = badgeText;
+    mainSpan.appendChild(badgeSpan);
+  }
+
+  const labelSpan = document.createElement('span');
+  labelSpan.className = 'custom-select-option-label';
+  labelSpan.textContent = labelText;
+  mainSpan.appendChild(labelSpan);
+
+  btn.appendChild(mainSpan);
+  btn.appendChild(createCheckIcon());
+
+  btn.addEventListener('click', () => {
+    secretSelect.value = optValue;
+    secretTarget = optValue;
+    syncSecretDropdownDisplay();
+    closeSecretDropdown();
+  });
+
+  return btn;
+}
+
+function renderSecretDropdownMenu() {
+  if (!secretDropdownMenu) return;
+  secretDropdownMenu.innerHTML = '';
+  secretDropdownMenu.appendChild(
+    buildSecretOptionButton('random', '【通常】仕込みなし', null, null)
+  );
+  itemsData.forEach((item, index) => {
+    secretDropdownMenu.appendChild(
+      buildSecretOptionButton(
+        String(index),
+        item.name || '（未入力）',
+        COLORS[index % COLORS.length],
+        String(index + 1)
+      )
+    );
+  });
+  syncSecretDropdownDisplay();
+}
+
 function updateSecretSelectOptions() {
   secretSelect.innerHTML = '<option value="random">【通常】仕込みなし</option>';
   itemsData.forEach((item, index) => {
@@ -177,6 +294,7 @@ function updateSecretSelectOptions() {
     secretSelect.value = 'random';
     secretTarget = 'random';
   }
+  renderSecretDropdownMenu();
 }
 
 function getTotalWeight() {
@@ -626,11 +744,33 @@ appTitle.addEventListener('click', () => {
   if (titleTapCount >= 3) {
     titleTapCount = 0;
     updateSecretSelectOptions(); // 🎰 常にセレクトボックスを最新化
+    closeSecretDropdown();
     secretModal.style.display = 'flex';
   }
 });
 
+if (secretDropdownTrigger && secretDropdown) {
+  secretDropdownTrigger.addEventListener('click', () => {
+    const willOpen = !secretDropdown.classList.contains('is-open');
+    secretDropdown.classList.toggle('is-open', willOpen);
+    secretDropdownTrigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (secretDropdown.classList.contains('is-open') && !secretDropdown.contains(e.target)) {
+      closeSecretDropdown();
+    }
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && secretDropdown.classList.contains('is-open')) {
+      closeSecretDropdown();
+    }
+  });
+}
+
 closeSecretBtn.addEventListener('click', () => {
+  closeSecretDropdown();
   secretTarget = secretSelect.value;
   // 🎰 決定ボタンが押されたタイミングで確率を強制取得
   if (shikomiProbabilityInput) {
